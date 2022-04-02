@@ -17,7 +17,7 @@ abstract class Action {
         require_once "../App/Views/$classAtual/{$this->view->page}.phtml";
     }
     
-    protected function render($page, $layout) {
+    protected function render($page, $layout = 'layout') {
         $this->view->page = $page;
         if(file_exists("../App/Views/$layout.phtml")) require_once "../App/Views/$layout.phtml";
         else content();

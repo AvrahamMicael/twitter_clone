@@ -1,0 +1,18 @@
+{
+    "name": "vendor/miniframework",
+    "require": {
+        "php": ">=7.0"
+    },
+    "authors": [
+        {
+            "name": "Avraham Micael",
+            "email": "avrahammicael@protonmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/",
+            "MF\\": "vendor/MF/"
+        }
+    }
+}

@@ -5,11 +5,10 @@ namespace MF\Model;
 use App\Connection;
 
 class Container {
-    public static function getDadosContainer($tipo) {
+    public static function getModel($tipo) {
         $conn = Connection::conectar();
         $tipo = ucfirst($tipo);
         $class = "\\App\\Models\\$tipo";
-        $model = new $class($conn);
-        return $model->getDados();
+        return new $class($conn);
     }
 }

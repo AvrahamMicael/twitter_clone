@@ -16,7 +16,7 @@ class Usuario extends Model {
     public function __set($atr, $valor) {
         $this->$atr = $valor;
     }
-
+    
     //salvar
     public function salvar() {
         $query = '

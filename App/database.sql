@@ -6,3 +6,11 @@ create table usuarios(
     email varchar(100) not null,
     senha varchar(32) not null
 );
+
+create table tweets(
+    id int not null primary key auto_increment,
+    id_usuario int not null,
+    foreign key(id_usuario) references usuarios(id),
+    tweet varchar(140) not null,
+    data datetime default current_timestamp
+);

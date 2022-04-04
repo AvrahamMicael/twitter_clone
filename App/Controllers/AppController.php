@@ -34,4 +34,22 @@ class AppController extends Action {
         session_start();
         if(empty($_SESSION['id']) && empty($_SESSION['id'])) header('location: /');
     }
+
+    public function quemSeguir() {
+        $this->validaAutenticacao();
+
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+
+        $usuarios = [];
+
+        if(!empty($search)) {
+            $usuario = Container::getModel('usuario');
+            $usuario->__set('nome', $search);
+            $usuarios = $usuario->getAll();
+        }
+
+        $this->view->usuarios = $usuarios;
+
+        $this->render('quemSeguir');
+    }
 }

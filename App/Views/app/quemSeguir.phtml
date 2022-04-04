@@ -63,7 +63,7 @@
 						<div class="card-body">
 							<form action="/quem_seguir" method="get">
 								<div class="input-group mb-3">
-									<input name="search" type="text" class="form-control" placeholder="Quem você está procurando?">
+									<input name="search" type="text" value="<?= $this->view->search ?>" class="form-control" placeholder="Quem você está procurando?">
 									<div class="input-group-append">
 										<button class="btn btn-primary" type="submit">Procurar</button>
 									</div>
@@ -74,10 +74,7 @@
 				</div>
 			</div>
 
-			<?php
-				foreach($this->view->usuarios as $usuario) { 
-					if($_SESSION['id'] == $usuario['id']) continue
-			?>
+			<?php foreach($this->view->usuarios as $usuario) { ?>
 
 				<div class="row mb-2">
 					<div class="col">
@@ -90,8 +87,17 @@
 								
 									<div class="col-md-6 d-flex justify-content-end">
 										<div>
-											<a href="#" class="btn btn-success">Seguir</a>
-											<a href="#" class="btn btn-danger">Deixar de seguir</a>
+
+											<?php if($usuario['segue'] === false) { ?>
+
+												<a href="/acao?acao=seguir&id_usuario=<?= $usuario['id'] ?>&search=<?= $this->view->search ?>" class="btn btn-success">Seguir</a>
+												
+											<?php } else { ?>
+													
+													<a href="/acao?acao=deixar_de_seguir&id_usuario=<?= $usuario['id'] ?>&search=<?= $this->view->search ?>" class="btn btn-danger">Deixar de seguir</a>
+											
+											<?php }; ?>
+
 										</div>
 									</div>
 								</div>

@@ -80,10 +80,11 @@ class Usuario extends Model {
         $query = '
             select id, nome, email
             from usuarios
-            where nome like :nome
+            where nome like :nome and id != :id
         ';
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':nome', '%'.$this->__get('nome').'%');
+        $stmt->bindValue(':id', $this->__get('id'));
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);

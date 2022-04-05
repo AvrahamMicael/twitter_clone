@@ -140,17 +140,4 @@ class Usuario extends Model {
     }
     //
 
-    private function prepareExecQuery(array $bindValue = [], $query, $fetchAll = false) {
-        $stmt = $this->db->prepare($query);
-
-        foreach($bindValue as $value) {
-            $stmt->bindValue(':'.$value, $this->__get($value));
-        }
-
-        $stmt->execute();
-
-        if($fetchAll) return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
-    }
-
 }

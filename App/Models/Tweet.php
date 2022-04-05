@@ -23,12 +23,7 @@ class Tweet extends Model {
             insert into tweets(id_usuario, tweet)
             values(:id_usuario, :tweet)
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id_usuario', $this->__get('id_usuario'));
-        $stmt->bindValue(':tweet', $this->__get('tweet'));
-        $stmt->execute();
-
-        return $this;
+        $this->prepareExecQuery(['id_usuario', 'tweet'], $query);
     }
 
     //recuperar
@@ -53,11 +48,7 @@ class Tweet extends Model {
                 )
             order by t.data desc
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id_usuario', $this->__get('id_usuario'));
-        $stmt->execute();
-        
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->prepareExecQuery(['id_usuario'], $query, true);
     }
 
     public function removerTweet() {
@@ -68,9 +59,19 @@ class Tweet extends Model {
                 and
                 id = :id
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id_usuario', $this->__get('id_usuario'));
-        $stmt->bindValue(':id', $this->__get('id'));
-        $stmt->execute();
+        $this->prepareExecQuery(['id_usuario', 'id'], $query);
     }
+
+    private function prepareExecQuery(array $bindValue = [], $query, $fetchAll = false) {
+        $stmt = $this->db->prepare($query);
+
+        foreach($bindValue as $value) {
+            $stmt->bindValue(':'.$value, $this->__get($value));
+        }
+
+        $stmt->execute();
+        if($fetchAll) return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+    
 }

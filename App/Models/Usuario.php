@@ -23,12 +23,7 @@ class Usuario extends Model {
             insert into usuarios(nome, email, senha)
             values(:nome, :email, :senha)
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':nome', $this->__get('nome'));
-        $stmt->bindValue(':email', $this->__get('email'));
-        $stmt->bindValue(':senha', $this->__get('senha')); //md5() has 32 carac
-        $stmt->execute();
-        return $this;
+        $this->prepareExecQuery(['nome', 'email', 'senha'], $query);
     }
 
     //validar
@@ -48,12 +43,7 @@ class Usuario extends Model {
             from usuarios
             where email = :email
         ';
-
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':email', $this->__get('email'));
-        $stmt->execute();
-
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->prepareExecQuery(['email'], $query);
     }
 
     //autenticar
@@ -63,12 +53,8 @@ class Usuario extends Model {
             from usuarios
             where email = :email and senha = :senha
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':email', $this->__get('email'));
-        $stmt->bindValue(':senha', $this->__get('senha'));
-        $stmt->execute();
 
-        $usuario = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $usuario = $this->prepareExecQuery(['email', 'senha'], $query);
 
         if(!empty($usuario['id']) && !empty($usuario['nome'])) {
             $this->__set('id', $usuario['id']);
@@ -123,10 +109,7 @@ class Usuario extends Model {
             from usuarios
             where id = :id
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $this->__get('id'));
-        $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->prepareExecQuery(['id'], $query);
     }
 
     public function getTotalTweets() {
@@ -135,10 +118,7 @@ class Usuario extends Model {
             from tweets
             where id_usuario = :id
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $this->__get('id'));
-        $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->prepareExecQuery(['id'], $query);
     }
 
     public function getTotalSeguindo() {
@@ -147,10 +127,7 @@ class Usuario extends Model {
             from usuarios_seguidores
             where id = :id
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $this->__get('id'));
-        $stmt->execute();
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $this->prepareExecQuery(['id'], $query);
     }
 
     public function getTotalSeguidores() {
@@ -159,9 +136,20 @@ class Usuario extends Model {
             from usuarios_seguidores
             where id_usuario_seguindo = :id
         ';
+        return $this->prepareExecQuery(['id'], $query);
+    }
+    //
+
+    private function prepareExecQuery(array $bindValue = [], $query, $fetchAll = false) {
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $this->__get('id'));
+
+        foreach($bindValue as $value) {
+            $stmt->bindValue(':'.$value, $this->__get($value));
+        }
+
         $stmt->execute();
+
+        if($fetchAll) return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 

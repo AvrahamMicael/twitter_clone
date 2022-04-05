@@ -43,7 +43,7 @@ class AppController extends Action {
 
         $usuarios = [];
 
-        if(!empty($search)) {
+        if(!empty($search)) {///////////mudar aq
             $usuario = Container::getModel('usuario');
             $usuario->__set('nome', $search);
             $usuario->__set('id', $_SESSION['id']);
@@ -51,15 +51,15 @@ class AppController extends Action {
         }
 
         // segue ou não
-        $seguidor = Container::getModel('seguidor');
-        $seguidor->__set('id', $_SESSION['id']);
+        // $seguidor = Container::getModel('seguidor');
+        // $seguidor->__set('id', $_SESSION['id']);
         
-        foreach($usuarios as $idx => $usuario) {
-            $seguidor->__set('id_usuario_seguindo', $usuario['id']);
+        // foreach($usuarios as $idx => $usuario) {//mudar
+        //     $seguidor->__set('id_usuario_seguindo', $usuario['id']);
 
-            if($seguidor->segue()) $usuarios[$idx]['segue'] = true;
-            else $usuarios[$idx]['segue'] = false;
-        }
+        //     if($seguidor->segue()) $usuarios[$idx]['segue'] = true;
+        //     else $usuarios[$idx]['segue'] = false;
+        // }
         //
 
         $this->view->usuarios = $usuarios;

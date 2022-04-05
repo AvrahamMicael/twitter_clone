@@ -88,7 +88,7 @@
 									<div class="col-md-6 d-flex justify-content-end">
 										<div>
 
-											<?php if($usuario['segue'] === false) { ?>
+											<?php if($usuario['segue'] == 0) { ?>
 
 												<a href="/acao?acao=seguir&id_usuario=<?= $usuario['id'] ?>&search=<?= $this->view->search ?>" class="btn btn-success">Seguir</a>
 												

@@ -22,35 +22,33 @@ class Seguidor extends Model {
             insert into usuarios_seguidores(id, id_usuario_seguindo)
             values(:id, :id_usuario_seguindo)
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $this->__get('id'));
-        $stmt->bindValue(':id_usuario_seguindo', $this->__get('id_usuario_seguindo'));
-        $stmt->execute();
+        $this->prepareExecQuery($query);
     }
     
     public function deixarDeSeguir() {
         $query = '
-        delete from usuarios_seguidores
-        where id = :id and id_usuario_seguindo = :id_usuario_seguindo
+            delete from usuarios_seguidores
+            where id = :id and id_usuario_seguindo = :id_usuario_seguindo
         ';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $this->__get('id'));
-        $stmt->bindValue(':id_usuario_seguindo', $this->__get('id_usuario_seguindo'));
-        $stmt->execute();
+        $this->prepareExecQuery($query);
     }
 
-    public function segue() {
+    private function segue() {//
         $query = '
             select *
             from usuarios_seguidores
             where id = :id and id_usuario_seguindo = :id_usuario_seguindo
         ';
+
+        if(empty($this->prepareExecQuery($query))) return false;
+        return true;
+    }
+    
+    private function prepareExecQuery($query) {
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':id', $this->__get('id'));
         $stmt->bindValue(':id_usuario_seguindo', $this->__get('id_usuario_seguindo'));
         $stmt->execute();
-
-        if(empty($stmt->fetch())) return false;
-        return true;
+        return $stmt->fetch();
     }
 }

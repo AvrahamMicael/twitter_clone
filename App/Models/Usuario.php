@@ -76,22 +76,40 @@ class Usuario extends Model {
         }
     }
 
-    public function getAll() {
-        $query = '
-            select
-                u.id,
-                u.nome,
-                u.email,
-                (
-                    select count(*)
-                    from usuarios_seguidores as us
-                    where us.id_usuario_seguindo = u.id and  us.id = :id
-                ) as segue
-            from usuarios as u
-            where nome like :nome and id != :id
-        ';
+    public function getAll($empty = false) {
+        if($empty) {
+            $query = '
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    (
+                        select count(*)
+                        from usuarios_seguidores as us
+                        where us.id_usuario_seguindo = u.id and  us.id = :id
+                    ) as segue
+                from usuarios as u
+                where id != :id
+                limit 20
+            ';//offset
+        } else {
+            $query = '
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    (
+                        select count(*)
+                        from usuarios_seguidores as us
+                        where us.id_usuario_seguindo = u.id and  us.id = :id
+                    ) as segue
+                from usuarios as u
+                where nome like :nome and id != :id
+                limit 20
+            ';
+        }
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':nome', '%'.$this->__get('nome').'%');
+        if(!$empty) $stmt->bindValue(':nome', '%'.$this->__get('nome').'%');
         $stmt->bindValue(':id', $this->__get('id'));
         $stmt->execute();
 

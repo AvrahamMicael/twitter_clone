@@ -41,26 +41,14 @@ class AppController extends Action {
         $search = isset($_GET['search']) ? $_GET['search'] : '';
         $this->view->search = $search;
 
-        $usuarios = [];
-
-        if(!empty($search)) {///////////mudar aq
-            $usuario = Container::getModel('usuario');
+        $usuario = Container::getModel('usuario');
+        $usuario->__set('id', $_SESSION['id']);
+        
+        if(empty($search)) $usuarios = $usuario->getAll(true);
+        else {
             $usuario->__set('nome', $search);
-            $usuario->__set('id', $_SESSION['id']);
             $usuarios = $usuario->getAll();
         }
-
-        // segue ou não
-        // $seguidor = Container::getModel('seguidor');
-        // $seguidor->__set('id', $_SESSION['id']);
-        
-        // foreach($usuarios as $idx => $usuario) {//mudar
-        //     $seguidor->__set('id_usuario_seguindo', $usuario['id']);
-
-        //     if($seguidor->segue()) $usuarios[$idx]['segue'] = true;
-        //     else $usuarios[$idx]['segue'] = false;
-        // }
-        //
 
         $this->view->usuarios = $usuarios;
 

@@ -76,7 +76,7 @@ class AppController extends Action {
         $url = isset($_GET['search']) ? '?search='.$_GET['search'] : '';
 
         $acao = isset($_GET['acao']) ? $_GET['acao'] : '';
-        $id_usuario_seguindo = isset($_GET['id_usuario']) ? $_GET['id_usuario'] : '';
+        $id_usuario_seguindo = isset($_GET['id_usuario']) && $_GET['id_usuario'] != $_SESSION['id'] ? $_GET['id_usuario'] : '';
 
         $seguidor = Container::getModel('seguidor');
         $seguidor->__set('id', $_SESSION['id']);

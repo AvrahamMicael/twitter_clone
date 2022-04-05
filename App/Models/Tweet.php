@@ -59,4 +59,18 @@ class Tweet extends Model {
         
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    public function removerTweet() {
+        $query = '
+            delete from tweets
+            where
+                id_usuario = :id_usuario
+                and
+                id = :id
+        ';
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id_usuario', $this->__get('id_usuario'));
+        $stmt->bindValue(':id', $this->__get('id'));
+        $stmt->execute();
+    }
 }

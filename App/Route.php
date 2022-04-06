@@ -47,10 +47,10 @@ class Route extends Bootstrap {
             'controller' => 'AppController',
             'action' => 'quemSeguir'
         ];
-        $routes['acao'] = [
-            'route' => '/acao',
+        $routes['action'] = [
+            'route' => '/action',
             'controller' => 'AppController',
-            'action' => 'acao'
+            'action' => 'action'
         ];
         $routes['remover_tweet'] = [
             'route' => '/remover_tweet',

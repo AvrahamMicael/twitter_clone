@@ -36,7 +36,9 @@ class AppController extends Action {
         $tweet->__set('id_usuario', $_SESSION['id']);
         $tweet->removerTweet();
 
-        header('location: /timeline');
+        $page = isset($_GET['page']) ? '?page='.$_GET['page'] : '';
+
+        header('location: /timeline'.$page);
     }
 
     public function validaAutenticacao() {
@@ -53,22 +55,23 @@ class AppController extends Action {
         $this->render('quemSeguir');
     }
 
-    public function acao() {
+    public function action() {
         $this->validaAutenticacao();
 
-        $url = isset($_GET['search']) ? '?search='.$_GET['search'] : '';
+        $url = isset($_GET['search']) ? '?search='.$_GET['search'].'&' : '?';
+        $page = isset($_GET['page']) ? 'page='.$_GET['page'] : '';
 
-        $acao = isset($_GET['acao']) ? $_GET['acao'] : '';
+        $action = isset($_GET['action']) ? $_GET['action'] : '';
         $id_usuario_seguindo = isset($_GET['id_usuario']) && $_GET['id_usuario'] != $_SESSION['id'] ? $_GET['id_usuario'] : '';
 
         $seguidor = Container::getModel('seguidor');
         $seguidor->__set('id', $_SESSION['id']);
         $seguidor->__set('id_usuario_seguindo', $id_usuario_seguindo);
 
-        if($acao == 'seguir') $seguidor->seguir();
+        if($action == 'seguir') $seguidor->seguir();
         else $seguidor->deixarDeSeguir();
 
-        header('location: /quem_seguir'.$url);
+        header("location: /quem_seguir$url$page");
     }
 
     private function pagination(string $type) {
@@ -84,14 +87,13 @@ class AppController extends Action {
             $searched = true;
         }
         
-        $limit = 2;
+        $limit = 10;
         $total_registros = $type->getTotalRegistros($searched);
-        echo $total_registros['total'];
         $this->view->total_paginas = ceil($total_registros['total'] / $limit);
-        // echo $this->view->total_paginas;
         
-        $page = isset($_GET['page']) && $_GET['page'] <= $this->view->total_paginas ? $_GET['page'] : 1;
-        $page = isset($_POST['page']) && $_POST['page'] <= $this->view->total_paginas ? $_POST['page'] : $page;
+        $page = isset($_GET['page']) ? $_GET['page'] : 1;
+        $page = isset($_POST['page']) ? $_POST['page'] : $page;
+        $page = $page > 0 && $page <= $this->view->total_paginas ? $page : 1;
         $this->view->current_page = $page;
         $offset = ($page - 1) * $limit;
 

@@ -90,11 +90,11 @@
 
 											<?php if($usuario['segue'] == 0) { ?>
 
-												<a href="/acao?acao=seguir&id_usuario=<?= $usuario['id'] ?>&search=<?= $this->view->search ?>" class="btn btn-success">Seguir</a>
+												<a href="/action?action=seguir&id_usuario=<?= $usuario['id'] ?>&search=<?= $this->view->search ?>&page=<?= $this->view->current_page ?>" class="btn btn-success">Seguir</a>
 												
 											<?php } else { ?>
 													
-												<a href="/acao?acao=deixar_de_seguir&id_usuario=<?= $usuario['id'] ?>&search=<?= $this->view->search ?>" class="btn btn-danger">Deixar de seguir</a>
+												<a href="/action?action=deixar_de_seguir&id_usuario=<?= $usuario['id'] ?>&search=<?= $this->view->search ?>&page=<?= $this->view->current_page ?>" class="btn btn-danger">Deixar de seguir</a>
 											
 											<?php }; ?>
 

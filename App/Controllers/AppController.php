@@ -10,21 +10,8 @@ use MF\Model\Container;
 class AppController extends Action {
     public function timeline() {
         $this->validaAutenticacao();
-
-        $tweet = Container::getModel('tweet');
-        $tweet->__set('id_usuario', $_SESSION['id']);
-
-        $limit = 10;
-        $total_tweets = $tweet->getTotalRegistros();
-        $this->view->total_paginas = ceil($total_tweets['total'] / $limit);
-
-        $page = isset($_GET['page']) && $_GET['page'] <= $this->view->total_paginas ? $_GET['page'] : 1;
-        $this->view->current_page = $page;
-        $offset = ($page - 1) * $limit;
-        $this->view->tweets = $tweet->getPorPagina($limit, $offset);
-        
+        $this->pagination('tweet');
         $this->getInfoUsuario();
-
         $this->render('timeline');
     }
 
@@ -59,23 +46,10 @@ class AppController extends Action {
 
     public function quemSeguir() {
         $this->validaAutenticacao();
-
         $this->getInfoUsuario();
-
-        $search = isset($_GET['search']) ? $_GET['search'] : '';
-        $this->view->search = $search;
-
-        $usuario = Container::getModel('usuario');
-        $usuario->__set('id', $_SESSION['id']);
-        
-        if(empty($search)) $usuarios = $usuario->getAll(true);
-        else {
-            $usuario->__set('nome', $search);
-            $usuarios = $usuario->getAll();
-        }
-
-        $this->view->usuarios = $usuarios;
-
+        $search = isset($_POST['search']) ? $_POST['search'] : '';
+        $this->view->search = isset($_GET['search']) ? $_GET['search'] : $search;
+        $this->pagination('usuario');
         $this->render('quemSeguir');
     }
 
@@ -95,6 +69,33 @@ class AppController extends Action {
         else $seguidor->deixarDeSeguir();
 
         header('location: /quem_seguir'.$url);
+    }
+
+    private function pagination(string $type) {
+        $types = $type.'s';
+        $id = $type == 'tweet' ? 'id_usuario' : 'id';
+        $searched = null;//quemSeguir
+
+        $type = Container::getModel($type);
+        $type->__set($id, $_SESSION['id']);
+
+        if($types == 'usuarios' && !empty($this->view->search)) {
+            $type->__set('nome', $this->view->search);
+            $searched = true;
+        }
+        
+        $limit = 2;
+        $total_registros = $type->getTotalRegistros($searched);
+        echo $total_registros['total'];
+        $this->view->total_paginas = ceil($total_registros['total'] / $limit);
+        // echo $this->view->total_paginas;
+        
+        $page = isset($_GET['page']) && $_GET['page'] <= $this->view->total_paginas ? $_GET['page'] : 1;
+        $page = isset($_POST['page']) && $_POST['page'] <= $this->view->total_paginas ? $_POST['page'] : $page;
+        $this->view->current_page = $page;
+        $offset = ($page - 1) * $limit;
+
+        $this->view->$types = $type->getPorPagina($limit, $offset, $searched);
     }
 
     private function getInfoUsuario() {

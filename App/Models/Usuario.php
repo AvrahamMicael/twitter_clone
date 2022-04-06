@@ -77,7 +77,7 @@ class Usuario extends Model {
                 from usuarios as u
                 where id != :id
                 limit 20
-            ';//offset
+            ';
         } else {
             $query = '
                 select
@@ -99,6 +99,73 @@ class Usuario extends Model {
         $stmt->bindValue(':id', $this->__get('id'));
         $stmt->execute();
 
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getTotalRegistros($searched) {
+        if(!is_null($searched)) {
+            $query = "
+                select count(*) as total
+                from usuarios
+                where
+                    nome like :nome
+                    and
+                    id != :id
+            ";
+        } else {
+            $query = "
+                select count(*) as total
+                from usuarios
+                where id != :id
+            ";
+        }
+        
+        $stmt = $this->db->prepare($query);
+        if(!is_null($searched)) $stmt->bindValue(':nome', '%'.$this->__get('nome').'%');
+        $stmt->bindValue(':id', $this->__get('id'));
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function getPorPagina($limit, $offset, $searched) {
+        if(is_null($searched)) { //vazio
+            $query = "
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    (
+                        select count(*)
+                        from usuarios_seguidores as us
+                        where us.id_usuario_seguindo = u.id and  us.id = :id
+                    ) as segue
+                from usuarios as u
+                where id != :id
+                limit $limit
+                offset $offset
+                ";
+        } else {
+            $query = "
+                select
+                    u.id,
+                    u.nome,
+                    u.email,
+                    (
+                        select count(*)
+                        from usuarios_seguidores as us
+                        where us.id_usuario_seguindo = u.id and  us.id = :id
+                    ) as segue
+                from usuarios as u
+                where nome like :nome and id != :id
+                limit $limit
+                offset $offset
+            ";
+        }
+        
+        $stmt = $this->db->prepare($query);
+        if(!is_null($searched)) $stmt->bindValue(':nome', '%'.$this->__get('nome').'%');
+        $stmt->bindValue(':id', $this->__get('id'));
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 

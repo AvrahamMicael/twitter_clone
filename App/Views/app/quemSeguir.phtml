@@ -61,7 +61,7 @@
 				<div class="col">
 					<div class="card">
 						<div class="card-body">
-							<form action="/quem_seguir" method="get">
+							<form action="/quem_seguir" method="post">
 								<div class="input-group mb-3">
 									<input name="search" type="text" value="<?= $this->view->search ?>" class="form-control" placeholder="Quem você está procurando?">
 									<div class="input-group-append">
@@ -107,6 +107,28 @@
 				</div>
 
 			<?php }; ?>
+
+			<div class="row justify-content-center">
+				<nav aria-label="...">
+					<ul class="pagination">
+						<li class="page-item">
+							<a class="page-link" href="?page=1&search=<?= $this->view->search ?>">Primeira</a>
+						</li>
+
+						<?php for($i = 1; $i <= $this->view->total_paginas; $i++) { ?>
+
+							<li class="page-item <?= $this->view->current_page == $i ? 'active' : '' ?>">
+								<a class="page-link" href="?page=<?= $i ?>&search=<?= $this->view->search ?>"><?= $i ?></a>
+							</li>
+
+						<?php }; ?>
+
+						<li class="page-item">
+							<a class="page-link" href="?page=<?= $this->view->total_paginas ?>&search=<?= $this->view->search ?>">Última</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
 
 		</div>
 	</div>

@@ -14,7 +14,14 @@ class AppController extends Action {
         $tweet = Container::getModel('tweet');
         $tweet->__set('id_usuario', $_SESSION['id']);
 
-        $this->view->tweets = $tweet->getAll();
+        $limit = 10;
+        $total_tweets = $tweet->getTotalRegistros();
+        $this->view->total_paginas = ceil($total_tweets['total'] / $limit);
+
+        $page = isset($_GET['page']) && $_GET['page'] <= $this->view->total_paginas ? $_GET['page'] : 1;
+        $this->view->current_page = $page;
+        $offset = ($page - 1) * $limit;
+        $this->view->tweets = $tweet->getPorPagina($limit, $offset);
         
         $this->getInfoUsuario();
 
@@ -24,10 +31,12 @@ class AppController extends Action {
     public function tweet() {
         $this->validaAutenticacao();
 
-        $tweet = Container::getModel('tweet');
-        $tweet->__set('tweet', $_POST['tweet']);
-        $tweet->__set('id_usuario', $_SESSION['id']);
-        $tweet->salvar();
+        if(!empty($_POST['tweet'])) {
+            $tweet = Container::getModel('tweet');
+            $tweet->__set('tweet', $_POST['tweet']);
+            $tweet->__set('id_usuario', $_SESSION['id']);
+            $tweet->salvar();    
+        }
 
         header('location: /timeline');
     }

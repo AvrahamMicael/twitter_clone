@@ -51,6 +51,48 @@ class Tweet extends Model {
         return $this->prepareExecQuery(['id_usuario'], $query, true);
     }
 
+    public function getPorPagina($limit, $offset) {
+        $query = "
+            select 
+                u.nome,
+                t.id,
+                t.id_usuario,
+                t.tweet,
+                date_format(t.data, '%d/%m/%Y %H:%i') as data
+            from tweets as t
+            left join usuarios as u
+            on t.id_usuario = u.id
+            where 
+                t.id_usuario = :id_usuario
+                or
+                t.id_usuario in(
+                    select id_usuario_seguindo
+                    from usuarios_seguidores
+                    where id = :id_usuario
+                )
+            order by t.data desc
+            limit $limit
+            offset $offset
+        ";
+        return $this->prepareExecQuery(['id_usuario'], $query, true);
+    }
+
+    public function getTotalRegistros() {
+        $query = "
+            select count(*) as total
+            from tweets
+            where 
+                id_usuario = :id_usuario
+                or
+                id_usuario in(
+                    select id_usuario_seguindo
+                    from usuarios_seguidores
+                    where id = :id_usuario
+                )
+        ";
+        return $this->prepareExecQuery(['id_usuario'], $query);
+    }
+
     public function removerTweet() {
         $query = '
             delete from tweets
